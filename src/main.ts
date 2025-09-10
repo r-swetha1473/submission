@@ -77,7 +77,10 @@ import { HeatmapCalendarComponent } from './components/heatmap-calendar/heatmap-
           <!-- Analysis Charts -->
           <div class="charts-grid">
             <app-area-chart [data]="dashboardData.submissions"></app-area-chart>
-            <app-grouped-bar-chart [data]="dashboardData.demands"></app-grouped-bar-chart>
+            <app-grouped-bar-chart 
+              [demands]="dashboardData.demands" 
+              [submissions]="dashboardData.submissions">
+            </app-grouped-bar-chart>
           </div>
 
           <!-- Heatmap -->

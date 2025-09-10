@@ -1,7 +1,7 @@
 import { Component, Input, OnInit, ElementRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import * as d3 from 'd3';
-import { DemandData } from '../../services/data.service';
+import { DemandData, SubmissionData } from '../../services/data.service';
 
 @Component({
   selector: 'app-grouped-bar-chart',
@@ -21,7 +21,8 @@ import { DemandData } from '../../services/data.service';
   `
 })
 export class GroupedBarChartComponent implements OnInit {
-  @Input() data: DemandData[] = [];
+  @Input() demands: DemandData[] = [];
+  @Input() submissions: SubmissionData[] = [];
   @ViewChild('chartRef') chartRef!: ElementRef;
 
   ngOnInit() {
@@ -31,7 +32,8 @@ export class GroupedBarChartComponent implements OnInit {
   private createChart() {
     const element = this.chartRef.nativeElement;
     const margin = { top: 20, right: 80, bottom: 40, left: 40 };
-    const width = 900 - margin.left - margin.right;
+    const containerWidth = element.parentElement?.clientWidth || 800;
+    const width = containerWidth - margin.left - margin.right;
     const height = 350 - margin.top - margin.bottom;
 
     d3.select(element).selectAll("*").remove();
@@ -43,7 +45,41 @@ export class GroupedBarChartComponent implements OnInit {
     const g = svg.append("g")
       .attr("transform", `translate(${margin.left},${margin.top})`);
 
-    const skills = this.data.map(d => d.skill);
+    // Process demand data by skill
+    const demandBySkill = this.demands.reduce((acc, d) => {
+      acc[d.skill] = (acc[d.skill] || 0) + d.positions;
+      return acc;
+    }, {} as { [key: string]: number });
+
+    // Process submission data by skill
+    const submissionBySkill = this.submissions.reduce((acc, s) => {
+      acc[s.skills] = (acc[s.skills] || 0) + 1;
+      return acc;
+    }, {} as { [key: string]: number });
+
+    // Combine data
+    const allSkills = new Set([...Object.keys(demandBySkill), ...Object.keys(submissionBySkill)]);
+    const chartData = Array.from(allSkills).map(skill => ({
+      skill,
+      demand: demandBySkill[skill] || 0,
+      supply: submissionBySkill[skill] || 0
+    })).filter(d => d.demand > 0 || d.supply > 0)
+    .sort((a, b) => (b.demand + b.supply) - (a.demand + a.supply))
+    .slice(0, 10); // Top 10 skills
+
+    console.log('Grouped Bar Chart Data:', chartData);
+
+    if (chartData.length === 0) {
+      g.append("text")
+        .attr("x", width / 2)
+        .attr("y", height / 2)
+        .attr("text-anchor", "middle")
+        .style("fill", "var(--text-secondary)")
+        .text("No data available");
+      return;
+    }
+
+    const skills = chartData.map(d => d.skill);
 
     const x0 = d3.scaleBand()
       .domain(skills)
@@ -56,7 +92,7 @@ export class GroupedBarChartComponent implements OnInit {
       .padding(0.05);
 
   const y = d3.scaleLinear()
-    .domain([0, d3.max(this.data, d => Math.max(d.demand ?? 0, d.supply ?? 0)) ?? 0])
+    .domain([0, d3.max(chartData, d => Math.max(d.demand, d.supply)) || 0])
     .range([height, 0]);
 
 
@@ -74,7 +110,7 @@ export class GroupedBarChartComponent implements OnInit {
 
     // Add grouped bars
     const skillGroups = g.selectAll(".skill-group")
-      .data(this.data)
+      .data(chartData)
       .enter().append("g")
       .attr("class", "skill-group")
       .attr("transform", d => `translate(${x0(d.skill)},0)`);
@@ -102,8 +138,8 @@ export class GroupedBarChartComponent implements OnInit {
       .transition()
       .delay((d, i) => i * 100 + 200)
       .duration(800)
-  .attr("y", d => y(d.demand ?? 0))
-.attr("height", d => height - y(d.demand ?? 0));
+      .attr("y", d => y(d.supply))
+      .attr("height", d => height - y(d.supply));
 
 
     // Add legend
@@ -140,7 +176,7 @@ export class GroupedBarChartComponent implements OnInit {
 
 skillGroups.selectAll("rect")
   .on("mouseover", function(event, d) {
-    const dataPoint = d as { skill: string; supply: number; demand: number }; // cast
+    const dataPoint = d as { skill: string; supply: number; demand: number };
 
     const isSupply = d3.select(this).attr("fill") === color('supply');
     const value = isSupply ? dataPoint.supply : dataPoint.demand;
