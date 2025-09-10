@@ -41,7 +41,7 @@ import { HeatmapCalendarComponent } from './components/heatmap-calendar/heatmap-
               <p class="header-subtitle">Real-time analytics dashboard</p>
             </div>
             <button class="btn btn-primary" (click)="toggleTheme()">
-              {{ (themeService.isDarkMode$ | async) ? '☀️' : '🌙' }} Toggle Theme
+              {{ (themeService.isDarkMode$ | async) ? '☀️' : '🌙' }}
             </button>
           </div>
         </div>

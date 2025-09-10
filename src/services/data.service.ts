@@ -37,8 +37,9 @@ export interface DashboardData {
 
 @Injectable({ providedIn: 'root' })
 export class DataService {
-  private SUBMISSION_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQSOAQJWd7Pm_7pTn04ONGLY_xA69cq2ZHP9wf7Hb5VlFBJLFdGjL9ocdgnHo5fxeA6Dtjq5dPzGDs7/pub?output=csv&gid=0';
-  private DEMAND_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQSOAQJWd7Pm_7pTn04ONGLY_xA69cq2ZHP9wf7Hb5VlFBJLFdGjL9ocdgnHo5fxeA6Dtjq5dPzGDs7/pub?output=csv&gid=1';
+private SUBMISSION_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQSOAQJWd7Pm_7pTn04ONGLY_xA69cq2ZHP9wf7Hb5VlFBJLFdGjL9ocdgnHo5fxeA6Dtjq5dPzGDs7/pub?gid=0&single=true&output=csv';
+
+private DEMAND_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQSOAQJWd7Pm_7pTn04ONGLY_xA69cq2ZHP9wf7Hb5VlFBJLFdGjL9ocdgnHo5fxeA6Dtjq5dPzGDs7/pub?gid=1637620106&single=true&output=csv';
 
   constructor(private http: HttpClient) {}
 
@@ -48,7 +49,7 @@ export class DataService {
       demandsCsv: this.http.get(this.DEMAND_CSV, { responseType: 'text' })
     }).pipe(
       map(({ submissionsCsv, demandsCsv }) => {
-        console.log('Raw Submissions CSV:', submissionsCsv);
+        // console.log('Raw Submissions CSV:', submissionsCsv);
         console.log('Raw Demands CSV:', demandsCsv);
         
         const submissions = this.parseSubmissions(submissionsCsv);

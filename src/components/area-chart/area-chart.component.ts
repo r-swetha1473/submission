@@ -88,7 +88,8 @@ export class AreaChartComponent implements OnInit {
     // Add axes
 g.append("g")
   .attr("transform", `translate(0,${height})`)
-  .call(d3.axisBottom(xScale).tickFormat(d3.timeFormat("%b")))
+.call(d3.axisBottom(xScale).tickFormat(d => String(d)))
+
   .style("color", "var(--text-secondary)");
 
     g.append("g")

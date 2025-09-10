@@ -88,7 +88,8 @@ export class LineChartComponent implements OnInit {
     // Add axes
     g.append("g")
       .attr("transform", `translate(0,${height})`)
-      .call(d3.axisBottom(xScale).tickFormat(d3.timeFormat("%m/%d")))
+      .call(d3.axisBottom(xScale).tickFormat(d => String(d)))
+
       .style("color", "var(--text-secondary)");
 
 
