@@ -31,7 +31,8 @@ export class LineChartComponent implements OnInit {
   private createChart() {
     const element = this.chartRef.nativeElement;
     const margin = { top: 20, right: 30, bottom: 40, left: 40 };
-    const width = 900 - margin.left - margin.right;
+    const containerWidth = element.parentElement?.clientWidth || 800;
+    const width = containerWidth - margin.left - margin.right;
     const height = 350 - margin.top - margin.bottom;
 
     // Clear any existing chart
@@ -47,15 +48,28 @@ export class LineChartComponent implements OnInit {
     // Process data - group by date and sum submissions
     const groupedData = d3.rollup(
       this.data,
-      v => d3.sum(v, d => d.submissions),
+      v => v.length, // Count submissions per date
       d => d.date
-    );
+    ).entries();
 
     const chartData = Array.from(groupedData, ([date, submissions]) => ({
       date: new Date(date),
       submissions
-    })).sort((a, b) => a.date.getTime() - b.date.getTime());
+    }))
+    .filter(d => !isNaN(d.date.getTime())) // Filter out invalid dates
+    .sort((a, b) => a.date.getTime() - b.date.getTime());
 
+    console.log('Line Chart Data:', chartData);
+
+    if (chartData.length === 0) {
+      g.append("text")
+        .attr("x", width / 2)
+        .attr("y", height / 2)
+        .attr("text-anchor", "middle")
+        .style("fill", "var(--text-secondary)")
+        .text("No data available");
+      return;
+    }
     // Scales
     const xScale = d3.scaleTime()
       .domain(d3.extent(chartData, d => d.date) as [Date, Date])

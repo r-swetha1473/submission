@@ -30,8 +30,9 @@ export class HorizontalBarChartComponent implements OnInit {
   private createChart() {
     const element = this.chartRef.nativeElement;
     const margin = { top: 20, right: 30, bottom: 40, left: 120 };
-    const width = 900 - margin.left - margin.right;
-    const height = 350 - margin.top - margin.bottom;
+    const containerWidth = element.parentElement?.clientWidth || 800;
+    const width = containerWidth - margin.left - margin.right;
+    const height = Math.max(350, Object.keys(this.data).length * 30) - margin.top - margin.bottom;
 
     d3.select(element).selectAll("*").remove();
 
@@ -46,7 +47,19 @@ export class HorizontalBarChartComponent implements OnInit {
     const chartData = Object.entries(this.data)
       .map(([spoc, submissions]) => ({ spoc, submissions }))
       .sort((a, b) => b.submissions - a.submissions)
-      .slice(0, 10); // Top 10 SPOCs
+      .slice(0, 15); // Top 15 SPOCs
+
+    console.log('Horizontal Bar Chart Data:', chartData);
+
+    if (chartData.length === 0) {
+      g.append("text")
+        .attr("x", width / 2)
+        .attr("y", height / 2)
+        .attr("text-anchor", "middle")
+        .style("fill", "var(--text-secondary)")
+        .text("No data available");
+      return;
+    }
 
     const yScale = d3.scaleBand()
       .domain(chartData.map(d => d.spoc))

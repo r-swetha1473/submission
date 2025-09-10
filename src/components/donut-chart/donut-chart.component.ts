@@ -31,7 +31,8 @@ export class DonutChartComponent implements OnInit {
 
   private createChart() {
     const element = this.chartRef.nativeElement;
-    const width = 500;
+    const containerWidth = element.parentElement?.clientWidth || 500;
+    const width = Math.min(containerWidth, 500);
     const height = 400;
     const radius = Math.min(width, height) / 2;
     const innerRadius = radius * 0.6;
@@ -46,6 +47,17 @@ export class DonutChartComponent implements OnInit {
       .attr("transform", `translate(${width / 2},${height / 2})`);
 
     const data = Object.entries(this.statusCounts).map(([status, count]) => ({ status, count }));
+    
+    console.log('Donut Chart Data:', data);
+
+    if (data.length === 0) {
+      g.append("text")
+        .attr("text-anchor", "middle")
+        .style("fill", "var(--text-secondary)")
+        .text("No data available");
+      return;
+    }
+
     const colors = ['var(--chart-1)', 'var(--chart-2)', 'var(--chart-3)', 'var(--chart-4)', 'var(--chart-5)'];
 
     const color = d3.scaleOrdinal(colors);

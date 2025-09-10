@@ -4,6 +4,7 @@ import { forkJoin, Observable, map } from 'rxjs';
 import * as d3 from 'd3-dsv';
 
 export interface SubmissionData {
+  sno: number;
   date: string;
   week: string;
   skills: string;
@@ -47,36 +48,92 @@ export class DataService {
       demandsCsv: this.http.get(this.DEMAND_CSV, { responseType: 'text' })
     }).pipe(
       map(({ submissionsCsv, demandsCsv }) => {
+        console.log('Raw Submissions CSV:', submissionsCsv);
+        console.log('Raw Demands CSV:', demandsCsv);
+        
         const submissions = this.parseSubmissions(submissionsCsv);
         const demands = this.parseDemands(demandsCsv);
+        
+        console.log('Parsed Submissions:', submissions);
+        console.log('Parsed Demands:', demands);
+        
         return this.processDashboardData(submissions, demands);
       })
     );
   }
 
   private parseSubmissions(csv: string): SubmissionData[] {
-    const rows = d3.csvParse(csv);
-    return rows.map(r => ({
-      date: r['Date'] || '',
-      week: r['week'] || r['Week'] || '',
-      skills: r['Skills'] || '',
-      spoc: r['SPOC'] || '',
-      recruiter: r['Recruiter'] || '',
-      submissions: 1 // Each row represents one submission
-    })).filter(r => r.date && r.spoc); // Filter out empty rows
+    try {
+      const rows = d3.csvParse(csv);
+      console.log('CSV Headers:', rows.columns);
+      console.log('First few rows:', rows.slice(0, 3));
+      
+      return rows.map((r, index) => ({
+        sno: parseInt(r['S.No'] || r['S.No.'] || r['SNo'] || r['sno'] || (index + 1).toString(), 10) || (index + 1),
+        date: this.parseDate(r['Date'] || r['date'] || ''),
+        week: r['week'] || r['Week'] || r['WEEK'] || '',
+        skills: r['Skills'] || r['skills'] || r['SKILLS'] || '',
+        spoc: r['SPOC'] || r['spoc'] || r['Spoc'] || '',
+        recruiter: r['Recruiter'] || r['recruiter'] || r['RECRUITER'] || '',
+        submissions: 1 // Each row represents one submission
+      })).filter(r => r.date && r.spoc && r.skills); // Filter out empty rows
+    } catch (error) {
+      console.error('Error parsing submissions CSV:', error);
+      return [];
+    }
   }
 
   private parseDemands(csv: string): DemandData[] {
-    const rows = d3.csvParse(csv);
-    return rows.map(r => ({
-      skill: r['Skill'] || '',
-      date: r['Date'] || '',
-      positions: parseInt(r['No. of Positions'] || '0', 10),
-      recruiter: r['Recruiter'] || '',
-      status: r['Status'] || 'Open',
-      client: r['Client'] || '',
-      spoc: r['SPOC'] || ''
-    })).filter(r => r.skill && r.positions > 0); // Filter out empty rows
+    try {
+      const rows = d3.csvParse(csv);
+      console.log('Demand CSV Headers:', rows.columns);
+      console.log('First few demand rows:', rows.slice(0, 3));
+      
+      return rows.map(r => ({
+        skill: r['Skill'] || r['skill'] || r['SKILL'] || '',
+        date: this.parseDate(r['Date'] || r['date'] || ''),
+        positions: parseInt(r['No. of Positions'] || r['No of Positions'] || r['Positions'] || r['positions'] || '0', 10) || 0,
+        recruiter: r['Recruiter'] || r['recruiter'] || r['RECRUITER'] || '',
+        status: r['Status'] || r['status'] || r['STATUS'] || 'Open',
+        client: r['Client'] || r['client'] || r['CLIENT'] || '',
+        spoc: r['SPOC'] || r['spoc'] || r['Spoc'] || ''
+      })).filter(r => r.skill && r.positions > 0); // Filter out empty rows
+    } catch (error) {
+      console.error('Error parsing demands CSV:', error);
+      return [];
+    }
+  }
+
+  private parseDate(dateStr: string): string {
+    if (!dateStr) return '';
+    
+    try {
+      // Handle various date formats
+      const date = new Date(dateStr);
+      if (isNaN(date.getTime())) {
+        // Try parsing DD/MM/YYYY or MM/DD/YYYY format
+        const parts = dateStr.split(/[\/\-\.]/);
+        if (parts.length === 3) {
+          // Assume DD/MM/YYYY format first
+          const day = parseInt(parts[0], 10);
+          const month = parseInt(parts[1], 10);
+          const year = parseInt(parts[2], 10);
+          
+          if (day <= 12 && month > 12) {
+            // Likely MM/DD/YYYY format
+            return new Date(year, day - 1, month).toISOString().split('T')[0];
+          } else {
+            // DD/MM/YYYY format
+            return new Date(year, month - 1, day).toISOString().split('T')[0];
+          }
+        }
+        return dateStr; // Return as-is if can't parse
+      }
+      return date.toISOString().split('T')[0];
+    } catch (error) {
+      console.error('Error parsing date:', dateStr, error);
+      return dateStr;
+    }
   }
 
   private processDashboardData(submissions: SubmissionData[], demands: DemandData[]): DashboardData {
@@ -85,19 +142,22 @@ export class DataService {
 
     // Status counts from demands
     const statusCounts = demands.reduce((acc, d) => {
-      acc[d.status] = (acc[d.status] || 0) + d.positions;
+      const status = d.status || 'Unknown';
+      acc[status] = (acc[status] || 0) + d.positions;
       return acc;
     }, {} as { [key: string]: number });
 
     // SPOC-wise submissions
     const spocSubmissions = submissions.reduce((acc, s) => {
-      acc[s.spoc] = (acc[s.spoc] || 0) + 1;
+      const spoc = s.spoc || 'Unknown';
+      acc[spoc] = (acc[spoc] || 0) + 1;
       return acc;
     }, {} as { [key: string]: number });
 
     // Skill-wise demands
     const skillDemands = demands.reduce((acc, d) => {
-      acc[d.skill] = (acc[d.skill] || 0) + d.positions;
+      const skill = d.skill || 'Unknown';
+      acc[skill] = (acc[skill] || 0) + d.positions;
       return acc;
     }, {} as { [key: string]: number });
 
@@ -110,11 +170,12 @@ export class DataService {
 
     // Daily submissions
     const dailySubmissions = submissions.reduce((acc, s) => {
-      acc[s.date] = (acc[s.date] || 0) + 1;
+      const date = s.date || 'Unknown';
+      acc[date] = (acc[date] || 0) + 1;
       return acc;
     }, {} as { [key: string]: number });
 
-    return {
+    const processedData = {
       submissions,
       demands,
       totalSubmissions,
@@ -125,5 +186,8 @@ export class DataService {
       weeklySubmissions,
       dailySubmissions
     };
+
+    console.log('Processed Dashboard Data:', processedData);
+    return processedData;
   }
 }

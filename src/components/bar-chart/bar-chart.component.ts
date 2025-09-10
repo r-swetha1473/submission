@@ -31,7 +31,8 @@ export class BarChartComponent implements OnInit {
   private createChart() {
     const element = this.chartRef.nativeElement;
     const margin = { top: 20, right: 30, bottom: 40, left: 40 };
-    const width = 900 - margin.left - margin.right;
+    const containerWidth = element.parentElement?.clientWidth || 800;
+    const width = containerWidth - margin.left - margin.right;
     const height = 350 - margin.top - margin.bottom;
 
     d3.select(element).selectAll("*").remove();
@@ -44,15 +45,35 @@ export class BarChartComponent implements OnInit {
       .attr("transform", `translate(${margin.left},${margin.top})`);
 
     // Group data by week
-    const weeklyData = this.groupDataByWeek(this.data);
+    const weeklyData = this.data.reduce((acc, d) => {
+      const week = d.week || 'Unknown';
+      acc[week] = (acc[week] || 0) + 1;
+      return acc;
+    }, {} as { [key: string]: number });
+
+    const chartData = Object.entries(weeklyData)
+      .map(([week, submissions]) => ({ week, submissions }))
+      .sort((a, b) => a.week.localeCompare(b.week));
+
+    console.log('Bar Chart Data:', chartData);
+
+    if (chartData.length === 0) {
+      g.append("text")
+        .attr("x", width / 2)
+        .attr("y", height / 2)
+        .attr("text-anchor", "middle")
+        .style("fill", "var(--text-secondary)")
+        .text("No data available");
+      return;
+    }
 
     const xScale = d3.scaleBand()
-      .domain(weeklyData.map(d => d.week))
+      .domain(chartData.map(d => d.week))
       .range([0, width])
       .padding(0.1);
 
     const yScale = d3.scaleLinear()
-      .domain([0, d3.max(weeklyData, d => d.submissions) || 0])
+      .domain([0, d3.max(chartData, d => d.submissions) || 0])
       .range([height, 0]);
 
     // Add axes
@@ -67,7 +88,7 @@ export class BarChartComponent implements OnInit {
 
     // Add bars
     g.selectAll(".bar")
-      .data(weeklyData)
+      .data(chartData)
       .enter().append("rect")
       .attr("class", "bar")
       .attr("x", d => xScale(d.week) || 0)
@@ -98,16 +119,5 @@ g.selectAll(".bar")
     tooltip.transition().duration(500).style("opacity", 0);
   });
 
-  }
-
-  private groupDataByWeek(data: SubmissionData[]) {
-    const weekFormat = d3.timeFormat("Week %U");
-    const weeklyMap = d3.rollup(
-      data,
-      v => d3.sum(v, d => d.submissions),
-      d => weekFormat(new Date(d.date))
-    );
-
-    return Array.from(weeklyMap, ([week, submissions]) => ({ week, submissions }));
   }
 }
