@@ -36,8 +36,8 @@ import { HeatmapCalendarComponent } from './components/heatmap-calendar/heatmap-
           <div class="header-content">
             <div>
               <h1 class="header-title">
-              SPOC Demand & Submission Report
-            </h1>
+                SPOC Demand & Submission Analytics
+              </h1>
               <p class="header-subtitle">Real-time analytics dashboard</p>
             </div>
             <button class="btn btn-primary" (click)="toggleTheme()">
@@ -59,24 +59,24 @@ import { HeatmapCalendarComponent } from './components/heatmap-calendar/heatmap-
           <app-kpi-cards 
             [totalSubmissions]="dashboardData.totalSubmissions"
             [currentDemand]="dashboardData.currentDemand"
-            [statusCount]="getStatusCount()">
+            [statusCount]="getActiveStatusCount()">
           </app-kpi-cards>
 
           <!-- Primary Charts -->
           <div class="charts-grid">
             <app-line-chart [data]="dashboardData.submissions"></app-line-chart>
-            <app-bar-chart [data]="dashboardData.submissions"></app-bar-chart>
+            <app-donut-chart [statusCounts]="dashboardData.statusCounts"></app-donut-chart>
           </div>
 
           <!-- Secondary Charts -->
           <div class="charts-grid">
-            <app-area-chart [data]="dashboardData.submissions"></app-area-chart>
+            <app-bar-chart [data]="dashboardData.submissions"></app-bar-chart>
             <app-horizontal-bar-chart [data]="dashboardData.spocSubmissions"></app-horizontal-bar-chart>
           </div>
 
           <!-- Analysis Charts -->
           <div class="charts-grid">
-            <app-donut-chart [statusCounts]="dashboardData.statusCounts"></app-donut-chart>
+            <app-area-chart [data]="dashboardData.submissions"></app-area-chart>
             <app-grouped-bar-chart [data]="dashboardData.demands"></app-grouped-bar-chart>
           </div>
 
@@ -98,7 +98,7 @@ import { HeatmapCalendarComponent } from './components/heatmap-calendar/heatmap-
       <footer class="footer">
         <div class="container">
           <p class="footer-text">
-            © 2025 SPOC Dashboard. Built with Angular & D3.js
+            © 2025 SPOC Analytics Dashboard. Built with Angular & D3.js for Real-time Insights
           </p>
         </div>
       </footer>
@@ -137,9 +137,13 @@ export class App implements OnInit {
     this.themeService.toggleTheme();
   }
 
-  getStatusCount(): number {
+  getActiveStatusCount(): number {
     if (!this.dashboardData) return 0;
-    return Object.values(this.dashboardData.statusCounts).reduce((sum, count) => sum + count, 0);
+    // Count only active/open statuses
+    const activeStatuses = ['Open', 'Pending', 'In Progress', 'Active'];
+    return Object.entries(this.dashboardData.statusCounts)
+      .filter(([status]) => activeStatuses.some(active => status.toLowerCase().includes(active.toLowerCase())))
+      .reduce((sum, [, count]) => sum + count, 0);
   }
 }
 

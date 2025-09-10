@@ -31,7 +31,7 @@ export class AreaChartComponent implements OnInit {
   private createChart() {
     const element = this.chartRef.nativeElement;
     const margin = { top: 20, right: 30, bottom: 40, left: 50 };
-    const width = 800 - margin.left - margin.right;
+    const width = 900 - margin.left - margin.right;
     const height = 350 - margin.top - margin.bottom;
 
     d3.select(element).selectAll("*").remove();
@@ -88,7 +88,7 @@ export class AreaChartComponent implements OnInit {
     // Add axes
 g.append("g")
   .attr("transform", `translate(0,${height})`)
-  .call(d3.axisBottom(xScale).tickFormat(d3.format("d"))) // integer format
+  .call(d3.axisBottom(xScale).tickFormat(d3.timeFormat("%b")))
   .style("color", "var(--text-secondary)");
 
     g.append("g")

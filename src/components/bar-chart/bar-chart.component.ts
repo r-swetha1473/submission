@@ -9,8 +9,10 @@ import { SubmissionData } from '../../services/data.service';
   imports: [CommonModule],
   template: `
     <div class="card">
-      <div style="padding: 1rem;">
-        <h3 style="margin-bottom: 1rem; font-size: 1.25rem; font-weight: 600;">Weekly Submissions</h3>
+      <div class="card-header">
+        <h3 class="card-title">Weekly Submissions Distribution</h3>
+      </div>
+      <div class="card-content">
         <div class="chart-container">
           <svg #chartRef></svg>
         </div>
@@ -29,7 +31,7 @@ export class BarChartComponent implements OnInit {
   private createChart() {
     const element = this.chartRef.nativeElement;
     const margin = { top: 20, right: 30, bottom: 40, left: 40 };
-    const width = 800 - margin.left - margin.right;
+    const width = 900 - margin.left - margin.right;
     const height = 350 - margin.top - margin.bottom;
 
     d3.select(element).selectAll("*").remove();
@@ -72,7 +74,7 @@ export class BarChartComponent implements OnInit {
       .attr("width", xScale.bandwidth())
       .attr("y", height)
       .attr("height", 0)
-      .attr("fill", "var(--chart-secondary)")
+      .attr("fill", "var(--chart-2)")
       .transition()
       .delay((d, i) => i * 100)
       .duration(800)

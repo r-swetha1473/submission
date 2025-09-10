@@ -9,8 +9,10 @@ import { SubmissionData } from '../../services/data.service';
   imports: [CommonModule],
   template: `
     <div class="card">
-      <div style="padding: 1rem;">
-        <h3 style="margin-bottom: 1rem; font-size: 1.25rem; font-weight: 600;">Daily Submissions</h3>
+      <div class="card-header">
+        <h3 class="card-title">Daily Submissions Trend</h3>
+      </div>
+      <div class="card-content">
         <div class="chart-container">
           <svg #chartRef></svg>
         </div>
@@ -29,7 +31,7 @@ export class LineChartComponent implements OnInit {
   private createChart() {
     const element = this.chartRef.nativeElement;
     const margin = { top: 20, right: 30, bottom: 40, left: 40 };
-    const width = 800 - margin.left - margin.right;
+    const width = 900 - margin.left - margin.right;
     const height = 350 - margin.top - margin.bottom;
 
     // Clear any existing chart
@@ -72,7 +74,7 @@ export class LineChartComponent implements OnInit {
     // Add axes
     g.append("g")
       .attr("transform", `translate(0,${height})`)
-      .call(d3.axisBottom(xScale).tickFormat(d3.format("d"))) // integer format
+      .call(d3.axisBottom(xScale).tickFormat(d3.timeFormat("%m/%d")))
       .style("color", "var(--text-secondary)");
 
 

@@ -30,7 +30,7 @@ export class HorizontalBarChartComponent implements OnInit {
   private createChart() {
     const element = this.chartRef.nativeElement;
     const margin = { top: 20, right: 30, bottom: 40, left: 120 };
-    const width = 800 - margin.left - margin.right;
+    const width = 900 - margin.left - margin.right;
     const height = 350 - margin.top - margin.bottom;
 
     d3.select(element).selectAll("*").remove();
@@ -76,7 +76,7 @@ export class HorizontalBarChartComponent implements OnInit {
       .attr("height", yScale.bandwidth())
       .attr("x", 0)
       .attr("width", 0)
-      .attr("fill", "var(--primary-purple)")
+      .attr("fill", "var(--chart-3)")
       .transition()
       .delay((d, i) => i * 100)
       .duration(800)
