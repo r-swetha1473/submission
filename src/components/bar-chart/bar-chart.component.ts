@@ -112,7 +112,7 @@ export class BarChartComponent implements OnInit {
       .attr("width", xScale.bandwidth())
       .attr("y", height)
       .attr("height", 0)
-      .attr("fill", "var(--chart-secondary)")
+      .attr("fill", "#4A90E2")
       .attr("rx", 4)
       .transition()
       .delay((d, i) => i * 100)

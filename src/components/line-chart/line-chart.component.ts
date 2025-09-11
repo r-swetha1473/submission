@@ -127,7 +127,7 @@ export class LineChartComponent implements OnInit {
     const path = g.append("path")
       .datum(chartData)
       .attr("fill", "none")
-      .attr("stroke", "var(--chart-primary)")
+      .attr("stroke", "#4A90E2")
       .attr("stroke-width", 2)
       .attr("d", line);
 
@@ -149,7 +149,7 @@ export class LineChartComponent implements OnInit {
       .attr("cx", d => xScale(d.date))
       .attr("cy", d => yScale(d.submissions))
       .attr("r", 0)
-      .attr("fill", "var(--chart-primary)")
+      .attr("fill", "#4A90E2")
       .transition()
       .delay((d, i) => i * 100)
       .duration(500)

@@ -59,6 +59,8 @@ export class DonutChartComponent implements OnInit {
     }
 
     const colors = ['#3b82f6', '#06b6d4', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#6366f1'];
+    // Updated colors to match reference image
+    const colors = ['#4A90E2', '#87CEEB', '#1B365D', '#40E0D0', '#32CD32', '#98FB98', '#FFA500', '#FF7F50'];
 
     const color = d3.scaleOrdinal(colors);
 

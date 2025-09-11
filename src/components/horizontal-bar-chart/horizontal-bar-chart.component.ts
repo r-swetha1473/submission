@@ -102,7 +102,7 @@ export class HorizontalBarChartComponent implements OnInit {
       .attr("height", yScale.bandwidth())
       .attr("x", 0)
       .attr("width", 0)
-      .attr("fill", "var(--chart-primary)")
+      .attr("fill", "#4A90E2")
       .attr("rx", 4)
       .transition()
       .delay((d, i) => i * 100)

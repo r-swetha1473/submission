@@ -64,12 +64,12 @@ export class AreaChartComponent implements OnInit {
 
     gradient.append("stop")
       .attr("offset", "0%")
-      .attr("stop-color", "var(--primary-blue)")
+      .attr("stop-color", "#4A90E2")
       .attr("stop-opacity", 0.1);
 
     gradient.append("stop")
       .attr("offset", "100%")
-      .attr("stop-color", "var(--primary-blue)")
+      .attr("stop-color", "#4A90E2")
       .attr("stop-opacity", 0.8);
 
     // Area generator
@@ -106,7 +106,7 @@ g.append("g")
     const linePath = g.append("path")
       .datum(monthlyData)
       .attr("fill", "none")
-      .attr("stroke", "var(--primary-blue)")
+      .attr("stroke", "#4A90E2")
       .attr("stroke-width", 3)
       .attr("d", line);
 
@@ -128,7 +128,7 @@ g.append("g")
       .attr("cx", d => xScale(d.date))
       .attr("cy", d => yScale(d.submissions))
       .attr("r", 0)
-      .attr("fill", "var(--primary-blue)")
+      .attr("fill", "#4A90E2")
       .transition()
       .delay((d, i) => i * 100)
       .duration(500)

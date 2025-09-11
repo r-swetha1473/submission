@@ -12,30 +12,32 @@
   --shadow-lg: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
   
-  /* Professional Brand Colors */
-  --primary-blue: #3b82f6;
-  --primary-navy: #1e40af;
-  --accent-teal: #06b6d4;
-  --accent-green: #10b981;
-  --accent-orange: #f59e0b;
-  --accent-red: #ef4444;
-  --accent-purple: #8b5cf6;
-  --accent-pink: #ec4899;
+  /* Color Palette from Reference Image */
+  --primary-blue: #4A90E2;
+  --light-blue: #87CEEB;
+  --sky-blue: #B0E0E6;
+  --navy-blue: #1B365D;
+  --dark-navy: #0F2A44;
+  --accent-teal: #40E0D0;
+  --accent-green: #32CD32;
+  --accent-mint: #98FB98;
+  --accent-orange: #FFA500;
+  --accent-coral: #FF7F50;
   
-  /* Chart Colors - Professional Palette */
-  --chart-1: #3b82f6;
-  --chart-2: #06b6d4;
-  --chart-3: #10b981;
-  --chart-4: #f59e0b;
-  --chart-5: #ef4444;
-  --chart-6: #8b5cf6;
-  --chart-7: #ec4899;
-  --chart-8: #6366f1;
+  /* Chart Colors - Matching Reference Image */
+  --chart-1: #4A90E2;
+  --chart-2: #87CEEB;
+  --chart-3: #1B365D;
+  --chart-4: #40E0D0;
+  --chart-5: #32CD32;
+  --chart-6: #98FB98;
+  --chart-7: #FFA500;
+  --chart-8: #FF7F50;
   
   /* Chart Variables */
   --chart-primary: var(--primary-blue);
-  --chart-secondary: var(--accent-teal);
-  --chart-tertiary: var(--accent-green);
+  --chart-secondary: var(--light-blue);
+  --chart-tertiary: var(--navy-blue);
 }
 
 [data-theme="dark"] {
@@ -77,7 +79,7 @@ body {
 
 /* Header Styles */
 .header {
-  background: linear-gradient(135deg, var(--primary-blue) 0%, var(--accent-teal) 100%);
+  background: linear-gradient(135deg, var(--sky-blue) 0%, var(--primary-blue) 50%, var(--navy-blue) 100%);
   padding: 3rem 0;
   position: relative;
   overflow: hidden;
@@ -169,7 +171,7 @@ body {
 
 /* Part Labels */
 .part-label {
-  background: var(--primary-navy);
+  background: var(--navy-blue);
   color: white;
   padding: 0.25rem 0.75rem;
   border-radius: 12px;
@@ -247,7 +249,7 @@ body {
 .highlight-number {
   font-size: 3rem;
   font-weight: 800;
-  color: var(--primary-blue);
+  color: var(--navy-blue);
   margin-bottom: 0.5rem;
   line-height: 1;
 }
@@ -391,7 +393,7 @@ body {
 
 /* Observations Section */
 .observations {
-  background: linear-gradient(135deg, var(--primary-blue) 0%, var(--accent-teal) 100%);
+  background: linear-gradient(135deg, var(--primary-blue) 0%, var(--navy-blue) 100%);
   border-radius: 16px;
   padding: 2rem;
   color: white;
