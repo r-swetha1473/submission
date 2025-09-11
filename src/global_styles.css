@@ -379,6 +379,17 @@ body {
   transition: all 0.2s ease;
   box-shadow: var(--shadow-lg);
 }
+.tooltip {
+  background: #fff;
+  padding: 6px 8px;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  font-size: 12px;
+  color: #111;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
 
 /* Loading States */
 .loading-container {
