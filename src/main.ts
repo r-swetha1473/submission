@@ -71,7 +71,7 @@ import { HeatmapCalendarComponent } from './components/heatmap-calendar/heatmap-
                 <div class="highlight-subtitle">From Jan 1st to Dec 31st</div>
               </div>
               <div class="highlight-item">
-                <div class="highlight-number">{{ dashboardData.currentDemand }}</div>
+                <div class="highlight-number">{{ getSupplyGap() }}</div>
                 <div class="highlight-label">Current Demand</div>
                 <div class="highlight-subtitle">Open positions requiring supply</div>
               </div>
@@ -85,16 +85,16 @@ import { HeatmapCalendarComponent } from './components/heatmap-calendar/heatmap-
 
           <!-- Part 1: Submissions Analysis -->
           <div class="charts-grid">
-            <div class="card">
-              <div class="card-header">
+        
+              <!-- <div class="card-header">
                 <div class="part-label">Part 1</div>
                 <h3 class="card-title">Daily Submissions Trend</h3>
                 <p class="card-subtitle">Track daily submission patterns over time</p>
-              </div>
+              </div> -->
               <div class="card-content">
                 <app-line-chart [data]="dashboardData.submissions"></app-line-chart>
               </div>
-            </div>
+            
           </div>
 
           <!-- Part 2: Current Demand by SPOC -->
@@ -116,8 +116,8 @@ import { HeatmapCalendarComponent } from './components/heatmap-calendar/heatmap-
             <div class="card">
               <div class="card-header">
                 <div class="part-label">Part 3</div>
-                <h3 class="card-title">Supply Required by Status</h3>
-                <p class="card-subtitle">Breakdown of supply requirements by current status</p>
+                <h3 class="card-title">Demand by Status</h3>
+                <p class="card-subtitle">Breakdown of Demands by status</p>
               </div>
               <div class="card-content">
                 <app-donut-chart [statusCounts]="dashboardData.statusCounts"></app-donut-chart>
@@ -134,7 +134,8 @@ import { HeatmapCalendarComponent } from './components/heatmap-calendar/heatmap-
                 <p class="card-subtitle">Skills with highest supply requirements</p>
               </div>
               <div class="card-content">
-                <app-horizontal-bar-chart [data]="dashboardData.skillDemands"></app-horizontal-bar-chart>
+                <app-horizontal-bar-chart [data]="getSkillCurrentDemand()"></app-horizontal-bar-chart>
+
               </div>
             </div>
           </div>
@@ -174,7 +175,7 @@ import { HeatmapCalendarComponent } from './components/heatmap-calendar/heatmap-
               <div>
                 <h3 style="margin-bottom: 1rem; font-size: 1.125rem;">Key Insights</h3>
                 <ul class="observations-list">
-                  <li>Supply Required: {{ dashboardData.currentDemand }} total profiles needed across all skills</li>
+                  <li>Supply Required: {{ getSupplyGap() }} total profiles needed across all skills</li>
                   <li>Profiles Submitted: {{ dashboardData.totalSubmissions }} profiles submitted to date</li>
                   <li>Top Performing SPOC: {{ getTopSpoc() }} leads with {{ getTopSpocCount() }} submissions</li>
                   <li>High Demand Skill: {{ getTopDemandSkill() }} requires {{ getTopDemandCount() }} profiles</li>
@@ -244,14 +245,21 @@ export class App implements OnInit {
     this.themeService.toggleTheme();
   }
 
-  getActiveStatusCount(): number {
-    if (!this.dashboardData) return 0;
-    // Count only active/open statuses
-    const activeStatuses = ['Open', 'Pending', 'In Progress', 'Active'];
-    return Object.entries(this.dashboardData.statusCounts)
-      .filter(([status]) => activeStatuses.some(active => status.toLowerCase().includes(active.toLowerCase())))
-      .reduce((sum, [, count]) => sum + count, 0);
-  }
+  // getActiveStatusCount(): number {
+  //   if (!this.dashboardData) return 0;
+  //   // Count only active/open statuses
+  //   const activeStatuses = ['Covered', 'Cancelled', 'Closed', 'Supply Required', 'On Hold'];
+  //   return Object.entries(this.dashboardData.statusCounts)
+  //     .filter(([status]) => activeStatuses.some(active => status.toLowerCase().includes(active.toLowerCase())))
+  //     .reduce((sum, [, count]) => sum + count, 0);
+  // }
+getSupplyRequiredCount(): number {
+  if (!this.dashboardData || !this.dashboardData.statusCounts) return 0;
+
+  return Object.entries(this.dashboardData.statusCounts)
+    .filter(([status]) => status.toLowerCase() === 'supply required')
+    .reduce((sum, [, count]) => sum + count, 0);
+}
 
   getDailyAverage(): number {
     if (!this.dashboardData) return 0;
@@ -259,14 +267,39 @@ export class App implements OnInit {
     return Math.round(this.dashboardData.totalSubmissions / Math.max(uniqueDates.size, 1)) || 0;
   }
 
+  // Demand all shows Functions
+  // getSpocDemandCounts(): { [key: string]: number } {
+  //   if (!this.dashboardData) return {};
+  //   return this.dashboardData.demands.reduce((acc, d) => {
+  //     const spoc = d.spoc || 'Unknown';
+  //     acc[spoc] = (acc[spoc] || 0) + (d.supplyRequired || d.positions);
+  //     return acc;
+  //   }, {} as { [key: string]: number });
+  // }
   getSpocDemandCounts(): { [key: string]: number } {
-    if (!this.dashboardData) return {};
+    if (!this.dashboardData || !this.dashboardData.demands) return {};
+
     return this.dashboardData.demands.reduce((acc, d) => {
-      const spoc = d.spoc || 'Unknown';
-      acc[spoc] = (acc[spoc] || 0) + (d.supplyRequired || d.positions);
+      if (d.status?.toLowerCase() === "supply required") {
+        const spoc = d.spoc || "Unknown";
+        const positions = d.positions ?? 0;
+        acc[spoc] = (acc[spoc] || 0) + positions;
+      }
       return acc;
     }, {} as { [key: string]: number });
   }
+getSkillCurrentDemand(): { [key: string]: number } {
+  if (!this.dashboardData || !this.dashboardData.demands) return {};
+
+  return this.dashboardData.demands.reduce((acc, d) => {
+    if (d.status?.toLowerCase() === "supply required") {
+      const skill = d.skill || "Unknown";
+      const positions = d.positions  ?? 0;
+      acc[skill] = (acc[skill] || 0) + positions;
+    }
+    return acc;
+  }, {} as { [key: string]: number });
+}
 
   getRecruiterSubmissions(): { [key: string]: number } {
     if (!this.dashboardData) return {};
@@ -287,8 +320,10 @@ export class App implements OnInit {
   }
 
   getSupplyGap(): number {
-    if (!this.dashboardData) return 0;
-    const gap = this.dashboardData.currentDemand - this.dashboardData.totalSubmissions;
+     if (!this.dashboardData || !this.dashboardData.statusCounts) return 0;
+    const supplyRequired = this.dashboardData.statusCounts['Supply Required'] ?? 0;
+
+    const gap = supplyRequired;
     return Math.max(0, gap);
   }
 

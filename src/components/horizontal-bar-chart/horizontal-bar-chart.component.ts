@@ -9,9 +9,10 @@ import * as d3 from 'd3';
   template: `
     <div class="chart-container">
       <svg #chartRef></svg>
-      <div *ngIf="Object.keys(data).length === 0" class="no-data-message">
-        <p>No data available</p>
-      </div>
+ <div *ngIf="(data | keyvalue).length === 0" class="no-data-message">
+  <p>No data available</p>
+</div>
+
     </div>
   `
 })

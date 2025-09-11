@@ -10,9 +10,10 @@ import * as d3 from 'd3';
     <div class="chart-container" style="height: 450px;">
       <svg #chartRef></svg>
       <div class="legend" #legendRef></div>
-      <div *ngIf="Object.keys(statusCounts).length === 0" class="no-data-message">
-        <p>No distribution data available</p>
-      </div>
+      <div *ngIf="(statusCounts | keyvalue).length === 0" class="no-data-message">
+  <p>No distribution data available</p>
+</div>
+
     </div>
   `
 })
