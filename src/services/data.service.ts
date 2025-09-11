@@ -50,8 +50,8 @@ private DEMAND_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQSOAQJWd7
       demandsCsv: this.http.get(this.DEMAND_CSV, { responseType: 'text' })
     }).pipe(
       map(({ submissionsCsv, demandsCsv }) => {
-        // console.log('Raw Submissions CSV:', submissionsCsv);
-        console.log('Raw Demands CSV:', demandsCsv);
+        console.log('Raw Submissions CSV:', submissionsCsv);
+        // console.log('Raw Demands CSV:', demandsCsv);
         
         const submissions = this.parseSubmissions(submissionsCsv);
         const demands = this.parseDemands(demandsCsv);
