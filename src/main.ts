@@ -36,56 +36,148 @@ import { HeatmapCalendarComponent } from './components/heatmap-calendar/heatmap-
           <div class="header-content">
             <div>
               <h1 class="header-title">
-                SPOC Demand & Submission Analytics
+                SPOC Demand & Submission Report
               </h1>
-              <p class="header-subtitle">Real-time analytics dashboard</p>
+              <p class="header-subtitle">Comprehensive analysis of recruitment metrics</p>
             </div>
-            <button class="btn btn-primary" (click)="toggleTheme()">
-              {{ (themeService.isDarkMode$ | async) ? '☀️' : '🌙' }}
-            </button>
+            <div class="report-badge">
+              📊 Report Overview
+            </div>
           </div>
         </div>
       </header>
 
       <!-- Main Content -->
-      <main class="container" style="padding: 2rem 0 0 0;">
+      <main class="container" style="padding: 2rem 0;">
         <div *ngIf="loading" class="loading-container">
           <div class="loading-spinner"></div>
           <p class="loading-text">Loading dashboard data...</p>
         </div>
 
         <div *ngIf="!loading && dashboardData" class="animate-slide-up">
-          <!-- KPI Cards -->
-          <app-kpi-cards 
-            [totalSubmissions]="dashboardData.totalSubmissions"
-            [currentDemand]="dashboardData.currentDemand"
-            [statusCount]="getActiveStatusCount()">
-          </app-kpi-cards>
-
-          <!-- Primary Charts -->
-          <div class="charts-grid">
-            <app-line-chart [data]="dashboardData.submissions"></app-line-chart>
-            <app-donut-chart [statusCounts]="dashboardData.statusCounts"></app-donut-chart>
+          <!-- Key Highlights -->
+          <div class="key-highlights">
+            <h2>Key Highlights</h2>
+            <div class="highlights-grid">
+              <div class="highlight-item">
+                <div class="highlight-number">{{ dashboardData.totalSubmissions }}</div>
+                <div class="highlight-label">Total Submissions</div>
+                <div class="highlight-subtitle">From Jan 1st to Dec 31st</div>
+              </div>
+              <div class="highlight-item">
+                <div class="highlight-number">{{ dashboardData.currentDemand }}</div>
+                <div class="highlight-label">Current Demand</div>
+                <div class="highlight-subtitle">Open positions requiring supply</div>
+              </div>
+              <div class="highlight-item">
+                <div class="highlight-number">{{ getDailyAverage() }}</div>
+                <div class="highlight-label">Daily Submissions</div>
+                <div class="highlight-subtitle">Average daily submission rate</div>
+              </div>
+            </div>
           </div>
 
-          <!-- Secondary Charts -->
+          <!-- Part 1: Submissions Analysis -->
           <div class="charts-grid">
-            <app-bar-chart [data]="dashboardData.submissions"></app-bar-chart>
-            <app-horizontal-bar-chart [data]="dashboardData.spocSubmissions"></app-horizontal-bar-chart>
+            <div class="card">
+              <div class="card-header">
+                <div class="part-label">Part 1</div>
+                <h3 class="card-title">Submissions: By Skill & SPOC</h3>
+              </div>
+              <div class="card-content">
+                <app-line-chart [data]="dashboardData.submissions"></app-line-chart>
+              </div>
+            </div>
           </div>
 
-          <!-- Analysis Charts -->
+          <!-- Part 2: Current Demand by SPOC -->
           <div class="charts-grid">
-            <app-area-chart [data]="dashboardData.submissions"></app-area-chart>
-            <app-grouped-bar-chart 
-              [demands]="dashboardData.demands" 
-              [submissions]="dashboardData.submissions">
-            </app-grouped-bar-chart>
+            <div class="card">
+              <div class="card-header">
+                <div class="part-label">Part 2</div>
+                <h3 class="card-title">Current Demand: By SPOC</h3>
+              </div>
+              <div class="card-content">
+                <app-donut-chart [statusCounts]="getSpocDemandCounts()"></app-donut-chart>
+              </div>
+            </div>
           </div>
 
-          <!-- Heatmap -->
-          <div style="margin-bottom: 2rem;">
-            <app-heatmap-calendar [data]="dashboardData.submissions"></app-heatmap-calendar>
+          <!-- Part 3: Demand by Status -->
+          <div class="charts-grid">
+            <div class="card">
+              <div class="card-header">
+                <div class="part-label">Part 3</div>
+                <h3 class="card-title">Demand: By Status</h3>
+              </div>
+              <div class="card-content">
+                <app-donut-chart [statusCounts]="dashboardData.statusCounts"></app-donut-chart>
+              </div>
+            </div>
+          </div>
+
+          <!-- Part 4: Current Demand by Skill -->
+          <div class="charts-grid">
+            <div class="card">
+              <div class="card-header">
+                <div class="part-label">Part 4</div>
+                <h3 class="card-title">Current Demand: By Skill</h3>
+              </div>
+              <div class="card-content">
+                <app-horizontal-bar-chart [data]="dashboardData.skillDemands"></app-horizontal-bar-chart>
+              </div>
+            </div>
+          </div>
+
+          <!-- Part 5: Weekly Submissions by Recruiters -->
+          <div class="charts-grid">
+            <div class="card">
+              <div class="card-header">
+                <div class="part-label">Part 5</div>
+                <h3 class="card-title">Weekly Submissions: Recruiters</h3>
+              </div>
+              <div class="card-content">
+                <app-bar-chart [data]="dashboardData.submissions"></app-bar-chart>
+              </div>
+            </div>
+          </div>
+
+          <!-- Part 6: Daily Submissions by Recruiters -->
+          <div class="charts-grid">
+            <div class="card">
+              <div class="card-header">
+                <div class="part-label">Part 6</div>
+                <h3 class="card-title">Daily Submissions: Recruiters</h3>
+              </div>
+              <div class="card-content">
+                <app-horizontal-bar-chart [data]="getRecruiterSubmissions()"></app-horizontal-bar-chart>
+              </div>
+            </div>
+          </div>
+
+          <!-- Observations Section -->
+          <div class="observations">
+            <h2>Observations: Supply vs. Demand</h2>
+            <div class="observations-content">
+              <div>
+                <h3 style="margin-bottom: 1rem; font-size: 1.125rem;">Key Insights</h3>
+                <ul class="observations-list">
+                  <li>Aligned Submissions: {{ getAlignmentPercentage() }}% of submissions match current demand skills</li>
+                  <li>Supply Gap: {{ getSupplyGap() }} positions still need to be filled across all skills</li>
+                  <li>Top Performing SPOC: {{ getTopSpoc() }} leads with {{ getTopSpocCount() }} submissions</li>
+                  <li>Skill Shortage: {{ getTopDemandSkill() }} has the highest demand with {{ getTopDemandCount() }} open positions</li>
+                </ul>
+              </div>
+              <div>
+                <h3 style="margin-bottom: 1rem; font-size: 1.125rem;">Recommendations</h3>
+                <ul class="observations-list">
+                  <li>Focus recruitment efforts on high-demand skills like {{ getTopDemandSkill() }}</li>
+                  <li>Increase daily submission targets to meet current demand of {{ dashboardData.currentDemand }} positions</li>
+                  <li>Leverage top-performing SPOCs to mentor others and share best practices</li>
+                  <li>Implement skill-specific recruitment strategies to reduce supply-demand gaps</li>
+                </ul>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -147,6 +239,72 @@ export class App implements OnInit {
     return Object.entries(this.dashboardData.statusCounts)
       .filter(([status]) => activeStatuses.some(active => status.toLowerCase().includes(active.toLowerCase())))
       .reduce((sum, [, count]) => sum + count, 0);
+  }
+
+  getDailyAverage(): number {
+    if (!this.dashboardData) return 0;
+    const uniqueDates = new Set(this.dashboardData.submissions.map(s => s.date));
+    return Math.round(this.dashboardData.totalSubmissions / uniqueDates.size) || 0;
+  }
+
+  getSpocDemandCounts(): { [key: string]: number } {
+    if (!this.dashboardData) return {};
+    return this.dashboardData.demands.reduce((acc, d) => {
+      const spoc = d.spoc || 'Unknown';
+      acc[spoc] = (acc[spoc] || 0) + d.positions;
+      return acc;
+    }, {} as { [key: string]: number });
+  }
+
+  getRecruiterSubmissions(): { [key: string]: number } {
+    if (!this.dashboardData) return {};
+    return this.dashboardData.submissions.reduce((acc, s) => {
+      const recruiter = s.recruiter || 'Unknown';
+      acc[recruiter] = (acc[recruiter] || 0) + 1;
+      return acc;
+    }, {} as { [key: string]: number });
+  }
+
+  getAlignmentPercentage(): number {
+    if (!this.dashboardData) return 0;
+    const demandSkills = new Set(this.dashboardData.demands.map(d => d.skill.toLowerCase()));
+    const alignedSubmissions = this.dashboardData.submissions.filter(s => 
+      demandSkills.has(s.skills.toLowerCase())
+    ).length;
+    return Math.round((alignedSubmissions / this.dashboardData.totalSubmissions) * 100) || 0;
+  }
+
+  getSupplyGap(): number {
+    if (!this.dashboardData) return 0;
+    return Math.max(0, this.dashboardData.currentDemand - this.dashboardData.totalSubmissions);
+  }
+
+  getTopSpoc(): string {
+    if (!this.dashboardData) return 'N/A';
+    const spocCounts = this.dashboardData.spocSubmissions;
+    const topSpoc = Object.entries(spocCounts).reduce((a, b) => a[1] > b[1] ? a : b, ['N/A', 0]);
+    return topSpoc[0];
+  }
+
+  getTopSpocCount(): number {
+    if (!this.dashboardData) return 0;
+    const spocCounts = this.dashboardData.spocSubmissions;
+    const topSpoc = Object.entries(spocCounts).reduce((a, b) => a[1] > b[1] ? a : b, ['N/A', 0]);
+    return topSpoc[1];
+  }
+
+  getTopDemandSkill(): string {
+    if (!this.dashboardData) return 'N/A';
+    const skillCounts = this.dashboardData.skillDemands;
+    const topSkill = Object.entries(skillCounts).reduce((a, b) => a[1] > b[1] ? a : b, ['N/A', 0]);
+    return topSkill[0];
+  }
+
+  getTopDemandCount(): number {
+    if (!this.dashboardData) return 0;
+    const skillCounts = this.dashboardData.skillDemands;
+    const topSkill = Object.entries(skillCounts).reduce((a, b) => a[1] > b[1] ? a : b, ['N/A', 0]);
+    return topSkill[1];
   }
 }
 

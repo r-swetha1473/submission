@@ -88,8 +88,14 @@ export class LineChartComponent implements OnInit {
     // Add axes
     g.append("g")
       .attr("transform", `translate(0,${height})`)
-      .call(d3.axisBottom(xScale).tickFormat(d => String(d)))
-
+      .call(d3.axisBottom(xScale)
+        .tickFormat(d3.timeFormat("%b %d"))
+        .ticks(Math.min(chartData.length, 8)))
+      .selectAll("text")
+      .style("text-anchor", "end")
+      .attr("dx", "-.8em")
+      .attr("dy", ".15em")
+      .attr("transform", "rotate(-45)")
       .style("color", "var(--text-secondary)");
 
 
@@ -97,12 +103,32 @@ export class LineChartComponent implements OnInit {
       .call(d3.axisLeft(yScale))
       .style("color", "var(--text-secondary)");
 
+    // Add grid lines
+    g.append("g")
+      .attr("class", "grid")
+      .attr("transform", `translate(0,${height})`)
+      .call(d3.axisBottom(xScale)
+        .tickSize(-height)
+        .tickFormat(() => "")
+      )
+      .style("stroke-dasharray", "3,3")
+      .style("opacity", 0.3);
+
+    g.append("g")
+      .attr("class", "grid")
+      .call(d3.axisLeft(yScale)
+        .tickSize(-width)
+        .tickFormat(() => "")
+      )
+      .style("stroke-dasharray", "3,3")
+      .style("opacity", 0.3);
+
     // Add the line path
     const path = g.append("path")
       .datum(chartData)
       .attr("fill", "none")
       .attr("stroke", "var(--chart-primary)")
-      .attr("stroke-width", 3)
+      .attr("stroke-width", 2)
       .attr("d", line);
 
     // Animate the line
@@ -111,7 +137,7 @@ export class LineChartComponent implements OnInit {
       .attr("stroke-dasharray", totalLength + " " + totalLength)
       .attr("stroke-dashoffset", totalLength)
       .transition()
-      .duration(2000)
+      .duration(1500)
       .ease(d3.easeLinear)
       .attr("stroke-dashoffset", 0);
 
@@ -127,7 +153,7 @@ export class LineChartComponent implements OnInit {
       .transition()
       .delay((d, i) => i * 100)
       .duration(500)
-      .attr("r", 4);
+      .attr("r", 3);
 
     // Add tooltip
     const tooltip = d3.select("body").append("div")

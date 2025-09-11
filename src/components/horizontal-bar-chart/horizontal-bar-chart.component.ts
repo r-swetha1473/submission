@@ -32,7 +32,7 @@ export class HorizontalBarChartComponent implements OnInit {
     const margin = { top: 20, right: 30, bottom: 40, left: 120 };
     const containerWidth = element.parentElement?.clientWidth || 800;
     const width = containerWidth - margin.left - margin.right;
-    const height = Math.max(350, Object.keys(this.data).length * 30) - margin.top - margin.bottom;
+    const height = Math.max(400, Object.keys(this.data).length * 35) - margin.top - margin.bottom;
 
     d3.select(element).selectAll("*").remove();
 
@@ -47,7 +47,7 @@ export class HorizontalBarChartComponent implements OnInit {
     const chartData = Object.entries(this.data)
       .map(([spoc, submissions]) => ({ spoc, submissions }))
       .sort((a, b) => b.submissions - a.submissions)
-      .slice(0, 15); // Top 15 SPOCs
+      .slice(0, 12); // Top 12 items
 
     console.log('Horizontal Bar Chart Data:', chartData);
 
@@ -70,10 +70,23 @@ export class HorizontalBarChartComponent implements OnInit {
       .domain([0, d3.max(chartData, d => d.submissions) || 0])
       .range([0, width]);
 
+    // Add grid lines
+    g.append("g")
+      .attr("class", "grid")
+      .attr("transform", `translate(0,${height})`)
+      .call(d3.axisBottom(xScale)
+        .tickSize(-height)
+        .tickFormat(() => "")
+      )
+      .style("stroke-dasharray", "2,2")
+      .style("opacity", 0.2);
+
     // Add axes
     g.append("g")
       .call(d3.axisLeft(yScale))
-      .style("color", "var(--text-secondary)");
+      .style("color", "var(--text-secondary)")
+      .selectAll("text")
+      .style("font-size", "11px");
 
     g.append("g")
       .attr("transform", `translate(0,${height})`)
@@ -89,7 +102,8 @@ export class HorizontalBarChartComponent implements OnInit {
       .attr("height", yScale.bandwidth())
       .attr("x", 0)
       .attr("width", 0)
-      .attr("fill", "var(--chart-3)")
+      .attr("fill", "var(--chart-primary)")
+      .attr("rx", 4)
       .transition()
       .delay((d, i) => i * 100)
       .duration(800)
@@ -103,7 +117,8 @@ export class HorizontalBarChartComponent implements OnInit {
       .attr("x", d => xScale(d.submissions) + 5)
       .attr("y", d => (yScale(d.spoc) || 0) + yScale.bandwidth() / 2)
       .attr("dy", ".35em")
-      .style("font-size", "12px")
+      .style("font-size", "11px")
+      .style("font-weight", "600")
       .style("fill", "var(--text-primary)")
       .style("opacity", 0)
       .text(d => d.submissions)

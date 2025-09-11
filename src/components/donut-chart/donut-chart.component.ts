@@ -33,9 +33,9 @@ export class DonutChartComponent implements OnInit {
     const element = this.chartRef.nativeElement;
     const containerWidth = element.parentElement?.clientWidth || 500;
     const width = Math.min(containerWidth, 500);
-    const height = 400;
+    const height = 350;
     const radius = Math.min(width, height) / 2;
-    const innerRadius = radius * 0.6;
+    const innerRadius = radius * 0.5;
 
     d3.select(element).selectAll("*").remove();
 
@@ -58,7 +58,7 @@ export class DonutChartComponent implements OnInit {
       return;
     }
 
-    const colors = ['var(--chart-1)', 'var(--chart-2)', 'var(--chart-3)', 'var(--chart-4)', 'var(--chart-5)'];
+    const colors = ['#3b82f6', '#06b6d4', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#6366f1'];
 
     const color = d3.scaleOrdinal(colors);
 
@@ -102,7 +102,7 @@ export class DonutChartComponent implements OnInit {
       .attr("dy", ".35em")
       .style("text-anchor", "middle")
       .style("fill", "white")
-      .style("font-size", "14px")
+      .style("font-size", "12px")
       .style("font-weight", "bold")
       .style("text-shadow", "1px 1px 2px rgba(0,0,0,0.7)")
       .text(d => `${Math.round((d.data.count / d3.sum(data, d => d.count)) * 100)}%`);
@@ -112,7 +112,7 @@ export class DonutChartComponent implements OnInit {
     g.append("text")
       .attr("text-anchor", "middle")
       .attr("dy", "-0.5em")
-      .style("font-size", "24px")
+      .style("font-size", "28px")
       .style("font-weight", "bold")
       .style("fill", "var(--text-primary)")
       .text(total);
@@ -120,7 +120,7 @@ export class DonutChartComponent implements OnInit {
     g.append("text")
       .attr("text-anchor", "middle")
       .attr("dy", "1em")
-      .style("font-size", "14px")
+      .style("font-size", "12px")
       .style("fill", "var(--text-secondary)")
       .text("Total");
 
