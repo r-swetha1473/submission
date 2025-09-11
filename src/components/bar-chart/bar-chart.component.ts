@@ -10,8 +10,8 @@ import { SubmissionData } from '../../services/data.service';
   template: `
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">{{ title || 'Top Performing Recruiters' }}</h3>
-        <p class="card-subtitle">{{ subtitle || 'Recruiters with most submissions this period' }}</p>
+        <h3 class="card-title">{{ title || 'Submissions by Recruiters' }}</h3>
+        <p class="card-subtitle">{{ subtitle || 'Average submissions during this period' }}</p>
       </div>
       <div class="card-content">
         <div class="chart-container">

@@ -11,7 +11,7 @@ import { SubmissionData } from '../../services/data.service';
     <div class="card">
       <div class="card-header">
         <h3 class="card-title">{{ title || 'Daily Submissions Trend' }}</h3>
-        <p class="card-subtitle">{{ subtitle || 'Track daily submission patterns over time' }}</p>
+        <p class="card-subtitle">{{ subtitle || 'Track submission patterns over time' }}</p>
       </div>
       <div class="card-content">
         <div class="chart-container">

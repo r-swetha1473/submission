@@ -36,7 +36,7 @@ import { HeatmapCalendarComponent } from './components/heatmap-calendar/heatmap-
           <div class="header-content">
             <div>
               <h1 class="header-title">
-                SPOC Demand & Submission Report
+                Demand & Submission Report
               </h1>
               <p class="header-subtitle">Comprehensive analysis of recruitment metrics</p>
             </div>
@@ -102,8 +102,8 @@ import { HeatmapCalendarComponent } from './components/heatmap-calendar/heatmap-
             <div class="card">
               <div class="card-header">
                 <div class="part-label">Part 2</div>
-                <h3 class="card-title">Supply Required by SPOC</h3>
-                <p class="card-subtitle">Distribution of supply requirements across SPOCs</p>
+                <h3 class="card-title">Current Demand</h3>
+                <p class="card-subtitle">Distribution of Demand by SPOCs</p>
               </div>
               <div class="card-content">
                 <app-donut-chart [statusCounts]="getSpocDemandCounts()"></app-donut-chart>
@@ -130,8 +130,8 @@ import { HeatmapCalendarComponent } from './components/heatmap-calendar/heatmap-
             <div class="card">
               <div class="card-header">
                 <div class="part-label">Part 4</div>
-                <h3 class="card-title">Supply Required by Skill</h3>
-                <p class="card-subtitle">Skills with highest supply requirements</p>
+                <h3 class="card-title">Demand by Skill</h3>
+                <p class="card-subtitle">Demand Distribution by Skills</p>
               </div>
               <div class="card-content">
                 <app-horizontal-bar-chart [data]="getSkillCurrentDemand()"></app-horizontal-bar-chart>
@@ -159,8 +159,8 @@ import { HeatmapCalendarComponent } from './components/heatmap-calendar/heatmap-
             <div class="card">
               <div class="card-header">
                 <div class="part-label">Part 6</div>
-                <h3 class="card-title">SPOC-wise Profile Submissions</h3>
-                <p class="card-subtitle">Number of profiles submitted by each SPOC</p>
+                <h3 class="card-title">SPOC-wise Submissions</h3>
+                <p class="card-subtitle">Number of profiles submitted to each SPOC</p>
               </div>
               <div class="card-content">
                 <app-horizontal-bar-chart [data]="dashboardData.spocSubmissions"></app-horizontal-bar-chart>
@@ -177,18 +177,18 @@ import { HeatmapCalendarComponent } from './components/heatmap-calendar/heatmap-
                 <ul class="observations-list">
                   <li>Supply Required: {{ getSupplyGap() }} total profiles needed across all skills</li>
                   <li>Profiles Submitted: {{ dashboardData.totalSubmissions }} profiles submitted to date</li>
-                  <li>Top Performing SPOC: {{ getTopSpoc() }} leads with {{ getTopSpocCount() }} submissions</li>
+                  <li>SPOC-wise Submissions: {{ getTopSpoc() }} gets the maximum supply of {{ getTopSpocCount() }} submissions</li>
                   <li>High Demand Skill: {{ getTopDemandSkill() }} requires {{ getTopDemandCount() }} profiles</li>
                 </ul>
               </div>
               <div>
-                <h3 style="margin-bottom: 1rem; font-size: 1.125rem;">Recommendations</h3>
+                <!-- <h3 style="margin-bottom: 1rem; font-size: 1.125rem;">Recommendations</h3>
                 <ul class="observations-list">
                   <li>Prioritize {{ getTopDemandSkill() }} skill recruitment to meet {{ getTopDemandCount() }} profile requirement</li>
                   <li>{{ getSupplyGap() > 0 ? 'Need ' + getSupplyGap() + ' more profiles to meet total demand' : 'Supply targets are being met effectively' }}</li>
                   <li>Leverage top-performing SPOCs to mentor others and share best practices</li>
                   <li>Focus on skills with highest supply requirements for maximum impact</li>
-                </ul>
+                </ul> -->
               </div>
             </div>
           </div>
