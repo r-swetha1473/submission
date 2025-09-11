@@ -193,7 +193,7 @@ import { HeatmapCalendarComponent } from './components/heatmap-calendar/heatmap-
       <footer class="footer">
         <div class="container">
           <p class="footer-text">
-            © 2025 SPOC Analytics Dashboard. Built with Angular & D3.js for Real-time Insights
+            © 2025 SPOC Analytics Dashboard.
           </p>
         </div>
       </footer>

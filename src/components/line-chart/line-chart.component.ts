@@ -88,9 +88,12 @@ export class LineChartComponent implements OnInit {
     // Add axes
     g.append("g")
       .attr("transform", `translate(0,${height})`)
-      .call(d3.axisBottom(xScale)
-        .tickFormat(d3.timeFormat("%b %d"))
-        .ticks(Math.min(chartData.length, 8)))
+      .call(
+  d3.axisBottom(xScale)
+    .ticks(Math.min(chartData.length, 8))
+    .tickFormat((d: Date | d3.NumberValue) => d3.timeFormat("%b %d")(d as Date))
+)
+       
       .selectAll("text")
       .style("text-anchor", "end")
       .attr("dx", "-.8em")

@@ -96,8 +96,8 @@ export class GroupedBarChartComponent implements OnInit {
     .range([height, 0]);
 
 
-    const color = d3.scaleOrdinal(['var(--chart-primary)', 'var(--chart-tertiary)']);
-    // Updated colors to match reference image
+    // const color = d3.scaleOrdinal(['var(--chart-primary)', 'var(--chart-tertiary)']);
+    // // Updated colors to match reference image
     const color = d3.scaleOrdinal(['#4A90E2', '#1B365D']);
 
     // Add axes
