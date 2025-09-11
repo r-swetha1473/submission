@@ -82,7 +82,8 @@ import { HeatmapCalendarComponent } from './components/heatmap-calendar/heatmap-
             <div class="card">
               <div class="card-header">
                 <div class="part-label">Part 1</div>
-                <h3 class="card-title">Submissions: By Skill & SPOC</h3>
+                <h3 class="card-title">Daily Submissions Trend</h3>
+                <p class="card-subtitle">Track daily submission patterns over time</p>
               </div>
               <div class="card-content">
                 <app-line-chart [data]="dashboardData.submissions"></app-line-chart>
@@ -95,7 +96,8 @@ import { HeatmapCalendarComponent } from './components/heatmap-calendar/heatmap-
             <div class="card">
               <div class="card-header">
                 <div class="part-label">Part 2</div>
-                <h3 class="card-title">Current Demand: By SPOC</h3>
+                <h3 class="card-title">Supply Required by SPOC</h3>
+                <p class="card-subtitle">Distribution of supply requirements across SPOCs</p>
               </div>
               <div class="card-content">
                 <app-donut-chart [statusCounts]="getSpocDemandCounts()"></app-donut-chart>
@@ -108,7 +110,8 @@ import { HeatmapCalendarComponent } from './components/heatmap-calendar/heatmap-
             <div class="card">
               <div class="card-header">
                 <div class="part-label">Part 3</div>
-                <h3 class="card-title">Demand: By Status</h3>
+                <h3 class="card-title">Supply Required by Status</h3>
+                <p class="card-subtitle">Breakdown of supply requirements by current status</p>
               </div>
               <div class="card-content">
                 <app-donut-chart [statusCounts]="dashboardData.statusCounts"></app-donut-chart>
@@ -121,7 +124,8 @@ import { HeatmapCalendarComponent } from './components/heatmap-calendar/heatmap-
             <div class="card">
               <div class="card-header">
                 <div class="part-label">Part 4</div>
-                <h3 class="card-title">Current Demand: By Skill</h3>
+                <h3 class="card-title">Supply Required by Skill</h3>
+                <p class="card-subtitle">Skills with highest supply requirements</p>
               </div>
               <div class="card-content">
                 <app-horizontal-bar-chart [data]="dashboardData.skillDemands"></app-horizontal-bar-chart>
@@ -134,7 +138,8 @@ import { HeatmapCalendarComponent } from './components/heatmap-calendar/heatmap-
             <div class="card">
               <div class="card-header">
                 <div class="part-label">Part 5</div>
-                <h3 class="card-title">Weekly Submissions: Recruiters</h3>
+                <h3 class="card-title">Top Performing Recruiters</h3>
+                <p class="card-subtitle">Recruiters with most submissions this period</p>
               </div>
               <div class="card-content">
                 <app-bar-chart [data]="dashboardData.submissions"></app-bar-chart>
@@ -142,15 +147,16 @@ import { HeatmapCalendarComponent } from './components/heatmap-calendar/heatmap-
             </div>
           </div>
 
-          <!-- Part 6: Daily Submissions by Recruiters -->
+          <!-- Part 6: SPOC-wise Submissions -->
           <div class="charts-grid">
             <div class="card">
               <div class="card-header">
                 <div class="part-label">Part 6</div>
-                <h3 class="card-title">Daily Submissions: Recruiters</h3>
+                <h3 class="card-title">SPOC-wise Profile Submissions</h3>
+                <p class="card-subtitle">Number of profiles submitted by each SPOC</p>
               </div>
               <div class="card-content">
-                <app-horizontal-bar-chart [data]="getRecruiterSubmissions()"></app-horizontal-bar-chart>
+                <app-horizontal-bar-chart [data]="dashboardData.spocSubmissions"></app-horizontal-bar-chart>
               </div>
             </div>
           </div>
@@ -162,19 +168,19 @@ import { HeatmapCalendarComponent } from './components/heatmap-calendar/heatmap-
               <div>
                 <h3 style="margin-bottom: 1rem; font-size: 1.125rem;">Key Insights</h3>
                 <ul class="observations-list">
-                  <li>Aligned Submissions: {{ getAlignmentPercentage() }}% of submissions match current demand skills</li>
-                  <li>Supply Gap: {{ getSupplyGap() }} positions still need to be filled across all skills</li>
+                  <li>Supply Required: {{ dashboardData.currentDemand }} total profiles needed across all skills</li>
+                  <li>Profiles Submitted: {{ dashboardData.totalSubmissions }} profiles submitted to date</li>
                   <li>Top Performing SPOC: {{ getTopSpoc() }} leads with {{ getTopSpocCount() }} submissions</li>
-                  <li>Skill Shortage: {{ getTopDemandSkill() }} has the highest demand with {{ getTopDemandCount() }} open positions</li>
+                  <li>High Demand Skill: {{ getTopDemandSkill() }} requires {{ getTopDemandCount() }} profiles</li>
                 </ul>
               </div>
               <div>
                 <h3 style="margin-bottom: 1rem; font-size: 1.125rem;">Recommendations</h3>
                 <ul class="observations-list">
-                  <li>Focus recruitment efforts on high-demand skills like {{ getTopDemandSkill() }}</li>
-                  <li>Increase daily submission targets to meet current demand of {{ dashboardData.currentDemand }} positions</li>
+                  <li>Prioritize {{ getTopDemandSkill() }} skill recruitment to meet {{ getTopDemandCount() }} profile requirement</li>
+                  <li>{{ getSupplyGap() > 0 ? 'Need ' + getSupplyGap() + ' more profiles to meet total demand' : 'Supply targets are being met effectively' }}</li>
                   <li>Leverage top-performing SPOCs to mentor others and share best practices</li>
-                  <li>Implement skill-specific recruitment strategies to reduce supply-demand gaps</li>
+                  <li>Focus on skills with highest supply requirements for maximum impact</li>
                 </ul>
               </div>
             </div>
@@ -184,7 +190,7 @@ import { HeatmapCalendarComponent } from './components/heatmap-calendar/heatmap-
         <div *ngIf="!loading && !dashboardData" style="text-align: center; padding: 4rem 0;">
           <p style="color: var(--text-secondary); font-size: 1.125rem;">No data available</p>
           <button class="btn btn-primary" (click)="loadDashboardData()" style="margin-top: 1rem;">
-            Retry Loading Data
+            Load Publicis Report Data
           </button>
         </div>
       </main>
@@ -193,7 +199,7 @@ import { HeatmapCalendarComponent } from './components/heatmap-calendar/heatmap-
       <footer class="footer">
         <div class="container">
           <p class="footer-text">
-            © 2025 SPOC Analytics Dashboard.
+            © 2025 Publicis SPOC Analytics Dashboard - Supply & Demand Report
           </p>
         </div>
       </footer>
@@ -244,14 +250,14 @@ export class App implements OnInit {
   getDailyAverage(): number {
     if (!this.dashboardData) return 0;
     const uniqueDates = new Set(this.dashboardData.submissions.map(s => s.date));
-    return Math.round(this.dashboardData.totalSubmissions / uniqueDates.size) || 0;
+    return Math.round(this.dashboardData.totalSubmissions / Math.max(uniqueDates.size, 1)) || 0;
   }
 
   getSpocDemandCounts(): { [key: string]: number } {
     if (!this.dashboardData) return {};
     return this.dashboardData.demands.reduce((acc, d) => {
       const spoc = d.spoc || 'Unknown';
-      acc[spoc] = (acc[spoc] || 0) + d.positions;
+      acc[spoc] = (acc[spoc] || 0) + (d.supplyRequired || d.positions);
       return acc;
     }, {} as { [key: string]: number });
   }
@@ -276,7 +282,8 @@ export class App implements OnInit {
 
   getSupplyGap(): number {
     if (!this.dashboardData) return 0;
-    return Math.max(0, this.dashboardData.currentDemand - this.dashboardData.totalSubmissions);
+    const gap = this.dashboardData.currentDemand - this.dashboardData.totalSubmissions;
+    return Math.max(0, gap);
   }
 
   getTopSpoc(): string {

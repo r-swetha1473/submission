@@ -21,6 +21,7 @@ export interface DemandData {
   status: string;
   client: string;
   spoc: string;
+  supplyRequired: number;
 }
 
 export interface DashboardData {
@@ -97,7 +98,8 @@ private DEMAND_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQSOAQJWd7
         recruiter: r['Recruiter'] || r['recruiter'] || r['RECRUITER'] || '',
         status: r['Status'] || r['status'] || r['STATUS'] || 'Open',
         client: r['Client'] || r['client'] || r['CLIENT'] || '',
-        spoc: r['SPOC'] || r['spoc'] || r['Spoc'] || ''
+        spoc: r['SPOC'] || r['spoc'] || r['Spoc'] || '',
+        supplyRequired: parseInt(r['Supply Required'] || r['supply required'] || r['SUPPLY REQUIRED'] || r['Supply_Required'] || '0', 10) || 0
       })).filter(r => r.skill && r.positions > 0); // Filter out empty rows
     } catch (error) {
       console.error('Error parsing demands CSV:', error);
@@ -139,12 +141,13 @@ private DEMAND_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQSOAQJWd7
 
   private processDashboardData(submissions: SubmissionData[], demands: DemandData[]): DashboardData {
     const totalSubmissions = submissions.length;
-    const currentDemand = demands.reduce((sum, d) => sum + d.positions, 0);
+    // Current demand is total supply required
+    const currentDemand = demands.reduce((sum, d) => sum + (d.supplyRequired || d.positions), 0);
 
     // Status counts from demands
     const statusCounts = demands.reduce((acc, d) => {
       const status = d.status || 'Unknown';
-      acc[status] = (acc[status] || 0) + d.positions;
+      acc[status] = (acc[status] || 0) + (d.supplyRequired || d.positions);
       return acc;
     }, {} as { [key: string]: number });
 
@@ -155,10 +158,10 @@ private DEMAND_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQSOAQJWd7
       return acc;
     }, {} as { [key: string]: number });
 
-    // Skill-wise demands
+    // Skill-wise demands (supply required)
     const skillDemands = demands.reduce((acc, d) => {
       const skill = d.skill || 'Unknown';
-      acc[skill] = (acc[skill] || 0) + d.positions;
+      acc[skill] = (acc[skill] || 0) + (d.supplyRequired || d.positions);
       return acc;
     }, {} as { [key: string]: number });
 

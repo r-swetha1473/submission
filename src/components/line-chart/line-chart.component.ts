@@ -10,7 +10,8 @@ import { SubmissionData } from '../../services/data.service';
   template: `
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">Daily Submissions Trend</h3>
+        <h3 class="card-title">{{ title || 'Daily Submissions Trend' }}</h3>
+        <p class="card-subtitle">{{ subtitle || 'Track daily submission patterns over time' }}</p>
       </div>
       <div class="card-content">
         <div class="chart-container">
@@ -22,6 +23,8 @@ import { SubmissionData } from '../../services/data.service';
 })
 export class LineChartComponent implements OnInit {
   @Input() data: SubmissionData[] = [];
+  @Input() title: string = '';
+  @Input() subtitle: string = '';
   @ViewChild('chartRef') chartRef!: ElementRef;
 
   ngOnInit() {
@@ -64,10 +67,19 @@ export class LineChartComponent implements OnInit {
     if (chartData.length === 0) {
       g.append("text")
         .attr("x", width / 2)
-        .attr("y", height / 2)
+        .attr("y", height / 2 - 10)
         .attr("text-anchor", "middle")
         .style("fill", "var(--text-secondary)")
-        .text("No data available");
+        .style("font-size", "14px")
+        .text("No submission trend data available");
+        
+      g.append("text")
+        .attr("x", width / 2)
+        .attr("y", height / 2 + 20)
+        .attr("text-anchor", "middle")
+        .style("fill", "var(--text-muted)")
+        .style("font-size", "12px")
+        .text("Daily trends will appear as data is collected");
       return;
     }
     // Scales

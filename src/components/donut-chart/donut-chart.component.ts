@@ -9,7 +9,8 @@ import * as d3 from 'd3';
   template: `
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">Status Distribution</h3>
+        <h3 class="card-title">{{ title || 'Supply Distribution' }}</h3>
+        <p class="card-subtitle">{{ subtitle || 'Breakdown of supply requirements' }}</p>
       </div>
       <div class="card-content">
         <div class="chart-container" style="height: 450px;">
@@ -22,6 +23,8 @@ import * as d3 from 'd3';
 })
 export class DonutChartComponent implements OnInit {
   @Input() statusCounts: { [key: string]: number } = {};
+  @Input() title: string = '';
+  @Input() subtitle: string = '';
   @ViewChild('chartRef') chartRef!: ElementRef;
   @ViewChild('legendRef') legendRef!: ElementRef;
 
@@ -53,8 +56,17 @@ export class DonutChartComponent implements OnInit {
     if (data.length === 0) {
       g.append("text")
         .attr("text-anchor", "middle")
+        .attr("dy", "-0.5em")
         .style("fill", "var(--text-secondary)")
-        .text("No data available");
+        .style("font-size", "14px")
+        .text("No distribution data available");
+        
+      g.append("text")
+        .attr("text-anchor", "middle")
+        .attr("dy", "1em")
+        .style("fill", "var(--text-muted)")
+        .style("font-size", "12px")
+        .text("Chart will display when data is loaded");
       return;
     }
 

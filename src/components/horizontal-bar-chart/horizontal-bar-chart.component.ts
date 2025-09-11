@@ -9,7 +9,8 @@ import * as d3 from 'd3';
   template: `
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">SPOC-wise Submissions</h3>
+        <h3 class="card-title">{{ title || 'SPOC-wise Profile Submissions' }}</h3>
+        <p class="card-subtitle">{{ subtitle || 'Number of profiles submitted by each SPOC' }}</p>
       </div>
       <div class="card-content">
         <div class="chart-container">
@@ -21,6 +22,8 @@ import * as d3 from 'd3';
 })
 export class HorizontalBarChartComponent implements OnInit {
   @Input() data: { [key: string]: number } = {};
+  @Input() title: string = '';
+  @Input() subtitle: string = '';
   @ViewChild('chartRef') chartRef!: ElementRef;
 
   ngOnInit() {
@@ -126,6 +129,25 @@ export class HorizontalBarChartComponent implements OnInit {
       .delay((d, i) => i * 100 + 400)
       .duration(500)
       .style("opacity", 1);
+
+    // Add chart title if no data
+    if (chartData.length === 0) {
+      g.append("text")
+        .attr("x", width / 2)
+        .attr("y", height / 2 - 20)
+        .attr("text-anchor", "middle")
+        .style("fill", "var(--text-secondary)")
+        .style("font-size", "14px")
+        .text("No SPOC submission data available");
+        
+      g.append("text")
+        .attr("x", width / 2)
+        .attr("y", height / 2 + 10)
+        .attr("text-anchor", "middle")
+        .style("fill", "var(--text-muted)")
+        .style("font-size", "12px")
+        .text("Data will appear here once submissions are recorded");
+    }
 
     // Add tooltip
     const tooltip = d3.select("body").append("div")

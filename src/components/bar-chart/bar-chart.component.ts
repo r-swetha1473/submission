@@ -10,7 +10,8 @@ import { SubmissionData } from '../../services/data.service';
   template: `
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">Weekly Submissions by Recruiters</h3>
+        <h3 class="card-title">{{ title || 'Top Performing Recruiters' }}</h3>
+        <p class="card-subtitle">{{ subtitle || 'Recruiters with most submissions this period' }}</p>
       </div>
       <div class="card-content">
         <div class="chart-container">
@@ -22,6 +23,8 @@ import { SubmissionData } from '../../services/data.service';
 })
 export class BarChartComponent implements OnInit {
   @Input() data: SubmissionData[] = [];
+  @Input() title: string = '';
+  @Input() subtitle: string = '';
   @ViewChild('chartRef') chartRef!: ElementRef;
 
   ngOnInit() {
@@ -61,10 +64,19 @@ export class BarChartComponent implements OnInit {
     if (chartData.length === 0) {
       g.append("text")
         .attr("x", width / 2)
-        .attr("y", height / 2)
+        .attr("y", height / 2 - 10)
         .attr("text-anchor", "middle")
         .style("fill", "var(--text-secondary)")
-        .text("No data available");
+        .style("font-size", "14px")
+        .text("No recruiter data available");
+        
+      g.append("text")
+        .attr("x", width / 2)
+        .attr("y", height / 2 + 20)
+        .attr("text-anchor", "middle")
+        .style("fill", "var(--text-muted)")
+        .style("font-size", "12px")
+        .text("Recruiter performance will be shown here");
       return;
     }
 
