@@ -7,16 +7,11 @@ import * as d3 from 'd3';
   standalone: true,
   imports: [CommonModule],
   template: `
-    <div class="card">
-      <div class="card-header">
-        <h3 class="card-title">{{ title || 'Supply Distribution' }}</h3>
-        <p class="card-subtitle">{{ subtitle || 'Breakdown of supply requirements' }}</p>
-      </div>
-      <div class="card-content">
-        <div class="chart-container" style="height: 450px;">
-          <svg #chartRef></svg>
-        </div>
-        <div class="legend" #legendRef></div>
+    <div class="chart-container" style="height: 450px;">
+      <svg #chartRef></svg>
+      <div class="legend" #legendRef></div>
+      <div *ngIf="Object.keys(statusCounts).length === 0" class="no-data-message">
+        <p>No distribution data available</p>
       </div>
     </div>
   `

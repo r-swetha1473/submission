@@ -141,8 +141,8 @@ private DEMAND_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQSOAQJWd7
 
   private processDashboardData(submissions: SubmissionData[], demands: DemandData[]): DashboardData {
     const totalSubmissions = submissions.length;
-    // Current demand is total supply required
-    const currentDemand = demands.reduce((sum, d) => sum + (d.supplyRequired || d.positions), 0);
+    // Current demand is count of entries with supply required > 0
+    const currentDemand = demands.filter(d => (d.supplyRequired || d.positions) > 0).length;
 
     // Status counts from demands
     const statusCounts = demands.reduce((acc, d) => {

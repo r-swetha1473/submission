@@ -40,8 +40,14 @@ import { HeatmapCalendarComponent } from './components/heatmap-calendar/heatmap-
               </h1>
               <p class="header-subtitle">Comprehensive analysis of recruitment metrics</p>
             </div>
-            <div class="report-badge">
-              📊 Report Overview
+            <div class="header-actions">
+              <button class="theme-toggle" (click)="toggleTheme()" [attr.aria-label]="(themeService.isDarkMode$ | async) ? 'Switch to light mode' : 'Switch to dark mode'">
+                <span *ngIf="!(themeService.isDarkMode$ | async)">🌙</span>
+                <span *ngIf="themeService.isDarkMode$ | async">☀️</span>
+              </button>
+              <div class="report-badge">
+                📊 Report Overview
+              </div>
             </div>
           </div>
         </div>
@@ -133,7 +139,7 @@ import { HeatmapCalendarComponent } from './components/heatmap-calendar/heatmap-
             </div>
           </div>
 
-          <!-- Part 5: Weekly Submissions by Recruiters -->
+          <!-- Part 5: Top Performing Recruiters -->
           <div class="charts-grid">
             <div class="card">
               <div class="card-header">

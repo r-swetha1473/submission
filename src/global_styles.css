@@ -104,6 +104,33 @@ body {
   z-index: 2;
 }
 
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* Theme Toggle Button */
+.theme-toggle {
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1.25rem;
+}
+
+.theme-toggle:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(1.05);
+}
+
 .header-title {
   font-size: 2.5rem;
   font-weight: 800;
@@ -293,20 +320,36 @@ body {
 /* Chart Container */
 .chart-container {
   width: 100%;
-  height: 400px;
+  min-height: 400px;
   overflow: visible;
   position: relative;
   padding: 1rem 0;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
 }
 
 .chart-container svg {
   max-width: 100%;
-  max-height: 100%;
+  height: auto;
   display: block;
   margin: 0 auto;
+}
+
+/* No Data Message */
+.no-data-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 300px;
+  color: var(--text-secondary);
+}
+
+.no-data-message p {
+  font-size: 1rem;
+  margin: 0;
 }
 
 /* Charts Grid */

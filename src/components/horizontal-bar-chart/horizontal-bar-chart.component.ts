@@ -7,15 +7,10 @@ import * as d3 from 'd3';
   standalone: true,
   imports: [CommonModule],
   template: `
-    <div class="card">
-      <div class="card-header">
-        <h3 class="card-title">{{ title || 'SPOC-wise Profile Submissions' }}</h3>
-        <p class="card-subtitle">{{ subtitle || 'Number of profiles submitted by each SPOC' }}</p>
-      </div>
-      <div class="card-content">
-        <div class="chart-container">
-          <svg #chartRef></svg>
-        </div>
+    <div class="chart-container">
+      <svg #chartRef></svg>
+      <div *ngIf="Object.keys(data).length === 0" class="no-data-message">
+        <p>No data available</p>
       </div>
     </div>
   `
@@ -32,10 +27,10 @@ export class HorizontalBarChartComponent implements OnInit {
 
   private createChart() {
     const element = this.chartRef.nativeElement;
-    const margin = { top: 20, right: 30, bottom: 40, left: 120 };
+    const margin = { top: 20, right: 60, bottom: 60, left: 150 };
     const containerWidth = element.parentElement?.clientWidth || 800;
     const width = containerWidth - margin.left - margin.right;
-    const height = Math.max(400, Object.keys(this.data).length * 35) - margin.top - margin.bottom;
+    const height = Math.max(400, Object.keys(this.data).length * 40) - margin.top - margin.bottom;
 
     d3.select(element).selectAll("*").remove();
 
@@ -48,8 +43,12 @@ export class HorizontalBarChartComponent implements OnInit {
 
     // Convert data to array and sort
     const chartData = Object.entries(this.data)
-      .map(([spoc, submissions]) => ({ spoc, submissions }))
-      .sort((a, b) => b.submissions - a.submissions)
+      .map(([key, value]) => ({ 
+        label: key.length > 20 ? key.substring(0, 20) + '...' : key, 
+        fullLabel: key,
+        value: value 
+      }))
+      .sort((a, b) => b.value - a.value)
       .slice(0, 12); // Top 12 items
 
     console.log('Horizontal Bar Chart Data:', chartData);
@@ -65,12 +64,12 @@ export class HorizontalBarChartComponent implements OnInit {
     }
 
     const yScale = d3.scaleBand()
-      .domain(chartData.map(d => d.spoc))
+      .domain(chartData.map(d => d.label))
       .range([0, height])
-      .padding(0.1);
+      .padding(0.15);
 
     const xScale = d3.scaleLinear()
-      .domain([0, d3.max(chartData, d => d.submissions) || 0])
+      .domain([0, d3.max(chartData, d => d.value) || 0])
       .range([0, width]);
 
     // Add grid lines
@@ -101,7 +100,7 @@ export class HorizontalBarChartComponent implements OnInit {
       .data(chartData)
       .enter().append("rect")
       .attr("class", "bar")
-      .attr("y", d => yScale(d.spoc) || 0)
+      .attr("y", d => yScale(d.label) || 0)
       .attr("height", yScale.bandwidth())
       .attr("x", 0)
       .attr("width", 0)
@@ -110,44 +109,25 @@ export class HorizontalBarChartComponent implements OnInit {
       .transition()
       .delay((d, i) => i * 100)
       .duration(800)
-      .attr("width", d => xScale(d.submissions));
+      .attr("width", d => xScale(d.value));
 
     // Add value labels
     g.selectAll(".label")
       .data(chartData)
       .enter().append("text")
       .attr("class", "label")
-      .attr("x", d => xScale(d.submissions) + 5)
-      .attr("y", d => (yScale(d.spoc) || 0) + yScale.bandwidth() / 2)
+      .attr("x", d => xScale(d.value) + 5)
+      .attr("y", d => (yScale(d.label) || 0) + yScale.bandwidth() / 2)
       .attr("dy", ".35em")
       .style("font-size", "11px")
       .style("font-weight", "600")
       .style("fill", "var(--text-primary)")
       .style("opacity", 0)
-      .text(d => d.submissions)
+      .text(d => d.value)
       .transition()
       .delay((d, i) => i * 100 + 400)
       .duration(500)
       .style("opacity", 1);
-
-    // Add chart title if no data
-    if (chartData.length === 0) {
-      g.append("text")
-        .attr("x", width / 2)
-        .attr("y", height / 2 - 20)
-        .attr("text-anchor", "middle")
-        .style("fill", "var(--text-secondary)")
-        .style("font-size", "14px")
-        .text("No SPOC submission data available");
-        
-      g.append("text")
-        .attr("x", width / 2)
-        .attr("y", height / 2 + 10)
-        .attr("text-anchor", "middle")
-        .style("fill", "var(--text-muted)")
-        .style("font-size", "12px")
-        .text("Data will appear here once submissions are recorded");
-    }
 
     // Add tooltip
     const tooltip = d3.select("body").append("div")
@@ -155,9 +135,9 @@ export class HorizontalBarChartComponent implements OnInit {
 
 g.selectAll(".bar")
   .on("mouseover", (event, d) => {
-    const dataPoint = d as { spoc: string; submissions: number };
+    const dataPoint = d as { label: string; fullLabel: string; value: number };
     tooltip.transition().duration(200).style("opacity", 0.9);
-    tooltip.html(`SPOC: ${dataPoint.spoc}<br/>Submissions: ${dataPoint.submissions}`)
+    tooltip.html(`${dataPoint.fullLabel}<br/>Count: ${dataPoint.value}`)
       .style("left", (event.pageX + 10) + "px")
       .style("top", (event.pageY - 28) + "px");
   })
