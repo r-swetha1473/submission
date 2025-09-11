@@ -68,7 +68,7 @@ import { HeatmapCalendarComponent } from './components/heatmap-calendar/heatmap-
               <div class="highlight-item">
                 <div class="highlight-number">{{ dashboardData.totalSubmissions }}</div>
                 <div class="highlight-label">Total Submissions</div>
-                <div class="highlight-subtitle">From Jan 1st to Dec 31st</div>
+                <div class="highlight-subtitle">From Aug 18th to Sep 11th</div>
               </div>
               <div class="highlight-item">
                 <div class="highlight-number">{{ getSupplyGap() }}</div>
