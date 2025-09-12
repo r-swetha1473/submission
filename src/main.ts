@@ -87,7 +87,7 @@ import { HeatmapCalendarComponent } from './components/heatmap-calendar/heatmap-
           <div class="charts-grid">
             <div class="card">
               <div class="card-header">
-                <div class="part-label">Part 1</div>
+                <!-- <div class="part-label">Part 1</div> -->
                 <!-- <h3 class="card-title">Daily Submissions Trend</h3>
                 <p class="card-subtitle">Track daily submission patterns over time</p> -->
               </div>
@@ -101,7 +101,7 @@ import { HeatmapCalendarComponent } from './components/heatmap-calendar/heatmap-
           <div class="charts-grid">
             <div class="card">
               <div class="card-header">
-                <div class="part-label">Part 2</div>
+                <!-- <div class="part-label">Part 2</div> -->
                 <h3 class="card-title">Current Demand</h3>
                 <p class="card-subtitle">Distribution of Demand by SPOCs</p>
               </div>
@@ -115,7 +115,7 @@ import { HeatmapCalendarComponent } from './components/heatmap-calendar/heatmap-
           <div class="charts-grid">
             <div class="card">
               <div class="card-header">
-                <div class="part-label">Part 3</div>
+                <!-- <div class="part-label">Part 3</div> -->
                 <h3 class="card-title">Demand by Status</h3>
                 <p class="card-subtitle">Breakdown of Demands by status</p>
               </div>
@@ -129,7 +129,7 @@ import { HeatmapCalendarComponent } from './components/heatmap-calendar/heatmap-
           <div class="charts-grid">
             <div class="card">
               <div class="card-header">
-                <div class="part-label">Part 4</div>
+                <!-- <div class="part-label">Part 4</div> -->
                 <h3 class="card-title">Demand by Skill</h3>
                 <p class="card-subtitle">Demand Distribution by Skills</p>
               </div>
@@ -144,7 +144,7 @@ import { HeatmapCalendarComponent } from './components/heatmap-calendar/heatmap-
           <div class="charts-grid">
             <div class="card">
               <div class="card-header">
-                <div class="part-label">Part 5</div>
+                <!-- <div class="part-label">Part 5</div> -->
                 <!-- <h3 class="card-title">Top Performing Recruiters</h3>
                 <p class="card-subtitle">Recruiters with most submissions this period</p> -->
               </div>
